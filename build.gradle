@@ -25,7 +25,7 @@ task zip(type: Zip) {
 		include "views/**"
 	}
 	//reports.junitXml.outputLocation = layout.buildDirectory.dir('reports/my-report')
-	baseName = "trainSchedule"
+	//baseName = "trainSchedule"
 }
 
 //declare task dependencies
