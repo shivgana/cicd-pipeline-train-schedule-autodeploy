@@ -24,7 +24,7 @@ task zip(type: Zip) {
 		include "routes/**"
 		include "views/**"
 	}
-	destinationDirectory file("dist")
+	reports.junitXml.outputLocation = layout.buildDirectory.dir('reports/my-report')
 	baseName "trainSchedule"
 }
 
