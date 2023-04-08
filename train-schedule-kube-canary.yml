@@ -20,7 +20,7 @@ metadata:
   labels:
     app: train-schedule
 spec:
-  replicas: $CANARY_REPLICAS
+  replicas: CANARY_REPLICAS
   selector:
     matchLabels:
       app: train-schedule
@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: train-schedule
-        image: $DOCKER_IMAGE_NAME:$BUILD_NUMBER
+        image: DOCKER_IMAGE_NAME:BUILD_NUMBER
         ports:
         - containerPort: 8080
         livenessProbe:
