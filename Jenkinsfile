@@ -47,8 +47,9 @@ pipeline {
             }
             steps {
                 script {
-                    kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
-                    // kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+                    //sh 'kubectl apply -f train-schedule-kube-canary.yml'
+                    //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
+                    kubernetesDeploy(configs: "train-schedule-kube-canary.yaml")
                 }
             }
         }
