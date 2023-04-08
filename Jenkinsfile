@@ -46,9 +46,8 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                kubernetes {
-                    yamlFile: 'train-schedule-kube-canary.yml'
-                }
+                kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
+                // kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
             }
         }
         stage('DeployToProduction') {
@@ -61,12 +60,9 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                kubernetes {
-                    yamlFile: 'train-schedule-kube-canary.yml'
-                }
-                kubernetes {
-                    yamlFile: 'train-schedule-kube.yml'
-                }
+                kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
+                kubernetes ( yamlFile: 'train-schedule-kube.yml')
+                
             }
         }
     }
