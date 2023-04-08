@@ -60,7 +60,7 @@ pipeline {
                         count=10
                         while [ $count -ne "0" ];
                         do
-                          if [ "$(kubectl get po -l app=train-schedule -n canary | sed -n '/\\(/1\\/1\\)/p') | wc -l" == "1" ]; then
+                          if [ "$(kubectl get po -l app=train-schedule -n canary | sed -n '/\(1\/1\)/p') | wc -l" == "1" ]; then
                             echo "Successfully Deployed"
                             exit 0
                           else
@@ -100,7 +100,7 @@ pipeline {
                         count=10
                         while [ $count -gt "0" ];
                         do
-                          if [ "$(kubectl get po -l app=train-schedule -n production | sed -n '/\\(/1\\/1\\)/p') | wc -l" == "2" ]; then
+                          if [ "$(kubectl get po -l app=train-schedule -n production | sed -n '/\(1\/1\)/p') | wc -l" == "2" ]; then
                             echo "Successfully Deployed"
                             exit 0
                           else
