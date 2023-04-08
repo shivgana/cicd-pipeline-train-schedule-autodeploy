@@ -51,7 +51,18 @@ pipeline {
                         sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
                         sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
                         sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
-                        sh 'kubectl apply -f train-schedule-kube-canary.yml'
+                        sh 'echo `kubectl delete ns canary`'
+                        sh 'echo `kubectl create ns canary`'
+                        sh 'kubectl apply -f train-schedule-kube-canary.yml -n canary'
+                        sh '''#!/bin/bash
+                        sleep 10
+                        if [ $(kubectl get po -l app=train-schedule -n canary | sed -n '/\("$CANARY_REPLICAS"\/"$CANARY_REPLICAS"/p') ]; then
+                          echo "Successfully Deployed"
+                        else
+                          echo "Deployment Failed"
+                          exit 1
+                        fi
+                        '''
                         //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
                         //kubernetesDeploy(configs: "train-schedule-kube-canary.yaml")
                     }
@@ -73,8 +84,19 @@ pipeline {
                         sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
                         sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
                         sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
+                        sh 'echo `kubectl delete ns production`'
+                        sh 'echo `kubectl create ns production`'
                         sh 'kubernetes apply -f train-schedule-kube-canary.yml'
                         sh 'kubernetes apply -f train-schedule-kube.yml'
+                        sh '''#!/bin/bash
+                        sleep 10
+                        if [ $(kubectl get po -l app=train-schedule -n production | sed -n '/\("$CANARY_REPLICAS"\/"$CANARY_REPLICAS"/p') ]; then
+                          echo "Successfully Deployed"
+                        else
+                          echo "Deployment Failed"
+                          exit 1
+                        fi
+                        '''
                     }
                     //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
                     //kubernetes ( yamlFile: 'train-schedule-kube.yml')
