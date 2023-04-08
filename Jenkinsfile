@@ -49,21 +49,26 @@ pipeline {
             steps {
                 script {
                     kubeconfig(credentialsId: 'kubeconfig') {
-                        sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
-                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yml'
-                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yml'
-                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yml'
+                        sh 'sed -i "s/CANARY_REPLICAS/$CANARY_REPLICAS/g;s/DOCKER_IMAGE_REPO/$DOCKER_IMAGE_REPO/g;s/DOCKER_IMAGE_NAME/$DOCKER_IMAGE_NAME/g;s/BUILD_NUMBER/$BUILD_NUMBER/g" train-schedule-kube-canary.yml'sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yml'
+                        //sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yml'
+                        //sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yml'
                         sh 'echo `kubectl delete ns canary`'
                         sh 'echo `kubectl create ns canary`'
                         sh 'kubectl apply -f train-schedule-kube-canary.yml -n canary'
                         sh '''#!/bin/bash
-                        sleep 10
-                        if [ "$(kubectl get po -l app=train-schedule -n canary | sed -n '/\\("$CANARY_REPLICAS"\\/"$CANARY_REPLICAS"\\)/p')" ]; then
-                          echo "Successfully Deployed"
-                        else
-                          echo "Deployment Failed"
-                          exit 1
-                        fi
+                        count=10
+                        while [ $count -ne "0" ];
+                        do
+                          if [ "$(kubectl get po -l app=train-schedule -n canary | sed -n '\\(/1\\/1\\)/p') | wc -l" == "2" ]; then
+                            echo "Successfully Deployed"
+                            exit 0
+                          else
+                            sleep 5
+                            count-=5
+                          fi
+                        done
+                        echo "Deployment Failed"
+                        exit 1
                         '''
                         //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
                         //kubernetesDeploy(configs: "train-schedule-kube-canary.yaml")
@@ -83,22 +88,28 @@ pipeline {
                     input 'Deploy to Production?'
                     milestone(1)
                     kubeconfig(credentialsId: 'kubeconfig') {
-                        sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
-                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yml'
-                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yml'
-                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yml'
+                        sh 'sed -i "s/DOCKER_IMAGE_REPO/$DOCKER_IMAGE_REPO/g;s/DOCKER_IMAGE_NAME/$DOCKER_IMAGE_NAME/g;s/BUILD_NUMBER/$BUILD_NUMBER/g" train-schedule-kube.yml'
+                        //sh 'sed -i "s/DOCKER_IMAGE_REPO/$DOCKER_IMAGE_REPO/g" train*.yml'
+                        //sh 'sed -i "s/DOCKER_IMAGE_NAME/$DOCKER_IMAGE_NAME/g" train*.yml'
+                        //sh 'sed -i "s/BUILD_NUMBER/$BUILD_NUMBER/g" train*.yml'
                         sh 'echo `kubectl delete ns production`'
                         sh 'echo `kubectl create ns production`'
-                        sh 'kubernetes apply -f train-schedule-kube-canary.yml -n production'
+                        //sh 'kubernetes apply -f train-schedule-kube-canary.yml -n production'
                         sh 'kubernetes apply -f train-schedule-kube.yml -n production'
                         sh '''#!/bin/bash
-                        sleep 10
-                        if [ "$(kubectl get po -l app=train-schedule -n production | sed -n '\\(/2\\/2\\)/p')" ]; then
-                          echo "Successfully Deployed"
-                        else
-                          echo "Deployment Failed"
-                          exit 1
-                        fi
+                        count=10
+                        while [ $count -ne "0" ];
+                        do
+                          if [ "$(kubectl get po -l app=train-schedule -n production | sed -n '\\(/1\\/1\\)/p') | wc -l" == "2" ]; then
+                            echo "Successfully Deployed"
+                            exit 0
+                          else
+                            sleep 5
+                            count-=5
+                          fi
+                        done
+                        echo "Deployment Failed"
+                        exit 1
                         '''
                     }
                     //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
