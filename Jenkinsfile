@@ -95,7 +95,7 @@ pipeline {
                         sh 'echo `kubectl delete ns production`'
                         sh 'echo `kubectl create ns production`'
                         //sh 'kubernetes apply -f train-schedule-kube-canary.yml -n production'
-                        sh 'kubernetes apply -f train-schedule-kube.yml -n production'
+                        sh 'kubectl apply -f train-schedule-kube.yml -n production'
                         sh '''#!/bin/bash
                         count=10
                         while [ $count -gt "0" ];
