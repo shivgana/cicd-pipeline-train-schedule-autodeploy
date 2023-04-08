@@ -47,7 +47,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'sed -i "s/$CANARY_REPLICAS/${env.CANARY_REPLICAS}/g" train-schedule-kube-canary.yml'
+                    sh 'sed -i "s/$CANARY_REPLICAS/'${env.CANARY_REPLICAS}'/g" train-schedule-kube-canary.yml'
                     sh 'kubectl apply -f train-schedule-kube-canary.yml'
                     //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
                 //    kubernetesDeploy(configs: "train-schedule-kube-canary.yaml")
