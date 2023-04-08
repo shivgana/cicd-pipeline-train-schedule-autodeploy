@@ -47,7 +47,7 @@ pipeline {
             }
             steps {
                 script {
-                    withKubeConfig([credentialsId: 'kubeconfig') {
+                    withKubeConfig([credentialsId: 'kubeconfig']) {
                         sh 'sed -i "s/$CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
                         sh 'kubectl config view'
                         sh 'kubectl apply -f train-schedule-kube-canary.yml'
