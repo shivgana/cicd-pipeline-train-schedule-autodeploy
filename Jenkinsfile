@@ -46,11 +46,11 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                script {
+                //script {
                     //sh 'kubectl apply -f train-schedule-kube-canary.yml'
-                    //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
-                    kubernetesDeploy(configs: "train-schedule-kube-canary.yaml")
-                }
+                kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
+                //    kubernetesDeploy(configs: "train-schedule-kube-canary.yaml")
+                //}
             }
         }
         stage('DeployToProduction') {
