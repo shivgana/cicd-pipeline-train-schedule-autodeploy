@@ -50,9 +50,9 @@ pipeline {
                 script {
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
-                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yaml'
-                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
-                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
+                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yml'
+                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yml'
+                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yml'
                         sh 'echo `kubectl delete ns canary`'
                         sh 'echo `kubectl create ns canary`'
                         sh 'kubectl apply -f train-schedule-kube-canary.yml -n canary'
@@ -84,9 +84,9 @@ pipeline {
                     milestone(1)
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
-                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yaml'
-                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
-                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
+                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yml'
+                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yml'
+                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yml'
                         sh 'echo `kubectl delete ns production`'
                         sh 'echo `kubectl create ns production`'
                         sh 'kubernetes apply -f train-schedule-kube-canary.yml -n production'
