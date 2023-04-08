@@ -59,12 +59,12 @@ pipeline {
                         count=10
                         while [ $count -ne "0" ];
                         do
-                          if [ "$(kubectl get po -l app=train-schedule -n canary | sed -n '\\(/1\\/1\\)/p') | wc -l" == "2" ]; then
+                          if [ "$(kubectl get po -l app=train-schedule -n canary | sed -n '\\(/1\\/1\\)/p') | wc -l" == "1" ]; then
                             echo "Successfully Deployed"
                             exit 0
                           else
                             sleep 5
-                            count-=5
+                            count-=1
                           fi
                         done
                         echo "Deployment Failed"
@@ -98,14 +98,14 @@ pipeline {
                         sh 'kubernetes apply -f train-schedule-kube.yml -n production'
                         sh '''#!/bin/bash
                         count=10
-                        while [ $count -ne "0" ];
+                        while [ $count -gt "0" ];
                         do
                           if [ "$(kubectl get po -l app=train-schedule -n production | sed -n '\\(/1\\/1\\)/p') | wc -l" == "2" ]; then
                             echo "Successfully Deployed"
                             exit 0
                           else
                             sleep 5
-                            count-=5
+                            count-=1
                           fi
                         done
                         echo "Deployment Failed"
