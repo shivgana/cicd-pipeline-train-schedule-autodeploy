@@ -86,8 +86,8 @@ pipeline {
                         sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
                         sh 'echo `kubectl delete ns production`'
                         sh 'echo `kubectl create ns production`'
-                        sh 'kubernetes apply -f train-schedule-kube-canary.yml'
-                        sh 'kubernetes apply -f train-schedule-kube.yml'
+                        sh 'kubernetes apply -f train-schedule-kube-canary.yml -n production'
+                        sh 'kubernetes apply -f train-schedule-kube.yml -n production'
                         sh '''#!/bin/bash
                         sleep 10
                         if [ $(kubectl get po -l app=train-schedule -n production | sed -n '/\("$CANARY_REPLICAS"\/"$CANARY_REPLICAS"/p') ]; then
