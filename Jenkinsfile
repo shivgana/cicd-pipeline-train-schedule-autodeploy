@@ -2,7 +2,8 @@ pipeline {
     agent any
     environment {
         //be sure to replace "bhavukm" with your own Docker Hub username
-        DOCKER_IMAGE_NAME = "docshiva/train-schedule"
+        DOCKER_IMAGE_REPO = "docshiva"
+        DOCKER_IMAGE_NAME = "train-schedule"
     }
     stages {
         stage('Build') {
@@ -18,7 +19,7 @@ pipeline {
             }
             steps {
                 script {
-                    app = docker.build(DOCKER_IMAGE_NAME)
+                    app = docker.build("$DOCKER_IMAGE_REPO/DOCKER_IMAGE_NAME")
                     app.inside {
                         sh 'echo Hello, World!'
                     }
@@ -49,6 +50,7 @@ pipeline {
                 script {
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
+                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yaml'
                         sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
                         sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
                         sh 'echo `kubectl delete ns canary`'
@@ -82,6 +84,7 @@ pipeline {
                     milestone(1)
                     kubeconfig(credentialsId: 'kubeconfig') {
                         sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
+                        sh 'sed -i "s/DOCKER_IMAGE_REPO/"$DOCKER_IMAGE_REPO"/g" train*.yaml'
                         sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
                         sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
                         sh 'echo `kubectl delete ns production`'
