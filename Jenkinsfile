@@ -48,8 +48,9 @@ pipeline {
             steps {
                 script {
                     kubeconfig(credentialsId: 'kubeconfig') {
-                        sh 'sed -i "s/$CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
-                        sh 'kubectl config view'
+                        sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
+                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
+                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
                         sh 'kubectl apply -f train-schedule-kube-canary.yml'
                         //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
                         //kubernetesDeploy(configs: "train-schedule-kube-canary.yaml")
@@ -68,8 +69,13 @@ pipeline {
                 script {
                     input 'Deploy to Production?'
                     milestone(1)
-                    sh 'kubernetes apply -f train-schedule-kube-canary.yml'
-                    sh 'kubernetes apply -f train-schedule-kube.yml'
+                    kubeconfig(credentialsId: 'kubeconfig') {
+                        sh 'sed -i "s/CANARY_REPLICAS/"$CANARY_REPLICAS"/g" train-schedule-kube-canary.yml'
+                        sh 'sed -i "s/DOCKER_IMAGE_NAME/"$DOCKER_IMAGE_NAME"/g" train*.yaml'
+                        sh 'sed -i "s/BUILD_NUMBER/"$BUILD_NUMBER"/g" train*.yaml'
+                        sh 'kubernetes apply -f train-schedule-kube-canary.yml'
+                        sh 'kubernetes apply -f train-schedule-kube.yml'
+                    }
                     //kubernetes ( yamlFile: 'train-schedule-kube-canary.yml')
                     //kubernetes ( yamlFile: 'train-schedule-kube.yml')
                 }
