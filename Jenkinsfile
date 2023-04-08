@@ -65,7 +65,7 @@ pipeline {
                             exit 0
                           else
                             sleep 5
-                            count-=1
+                            count=$((count - 1))
                           fi
                         done
                         echo "Deployment Failed"
@@ -105,7 +105,7 @@ pipeline {
                             exit 0
                           else
                             sleep 5
-                            count-=1
+                            count=$((count - 1))
                           fi
                         done
                         echo "Deployment Failed"
