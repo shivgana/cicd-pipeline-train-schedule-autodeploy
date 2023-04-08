@@ -56,7 +56,7 @@ pipeline {
                         sh 'kubectl apply -f train-schedule-kube-canary.yml -n canary'
                         sh '''#!/bin/bash
                         sleep 10
-                        if [ $(kubectl get po -l app=train-schedule -n canary | sed -n '/\("$CANARY_REPLICAS"\/"$CANARY_REPLICAS"/p') ]; then
+                        if [ "$(kubectl get po -l app=train-schedule -n canary | sed -n '/\("$CANARY_REPLICAS"\/"$CANARY_REPLICAS"/p')" ]; then
                           echo "Successfully Deployed"
                         else
                           echo "Deployment Failed"
@@ -90,7 +90,7 @@ pipeline {
                         sh 'kubernetes apply -f train-schedule-kube.yml -n production'
                         sh '''#!/bin/bash
                         sleep 10
-                        if [ $(kubectl get po -l app=train-schedule -n production | sed -n '/\("$CANARY_REPLICAS"\/"$CANARY_REPLICAS"/p') ]; then
+                        if [ "$(kubectl get po -l app=train-schedule -n production | sed -n '/\(2\/2/p')" ]; then
                           echo "Successfully Deployed"
                         else
                           echo "Deployment Failed"
